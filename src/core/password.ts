@@ -14,23 +14,29 @@ import { HashOptions, PasswordHashResult, VerificationResult } from '../types';
 export function hashPassword(password: string, options: Partial<HashOptions> = {}): string {
   validatePassword(password);
   
+  const algorithm = options.algorithm || 'sha256';
+  const saltLength = options.saltLength || 32;
+  const iterations = options.iterations || 1;
+  const keyLength = options.keyLength || 64;
+  const encoding = options.encoding || 'hex';
+  
   const opts: HashOptions = {
-    algorithm: options.algorithm || 'sha256',
-    saltLength: options.saltLength || 32,
-    iterations: options.iterations || 1,
-    keyLength: options.keyLength || 64,
-    encoding: options.encoding || 'hex'
+    algorithm,
+    saltLength,
+    iterations,
+    keyLength,
+    encoding
   };
   
-  const salt = generateSecureSalt(opts.saltLength);
+  const salt = generateSecureSalt(saltLength);
   let hash: string;
   
-  switch (opts.algorithm) {
+  switch (algorithm) {
     case 'sha256':
     default:
       hash = sha256(password + salt);
       // Apply multiple iterations for enhanced security
-      for (let i = 1; i < opts.iterations; i++) {
+      for (let i = 1; i < iterations; i++) {
         hash = sha256(hash);
       }
       break;
@@ -55,26 +61,33 @@ export function hashPassword(password: string, options: Partial<HashOptions> = {
 export function hashPasswordWithOptions(password: string, options: Partial<HashOptions> = {}): PasswordHashResult {
   validatePassword(password);
   
+  const algorithm = options.algorithm || 'sha256';
+  const saltLength = options.saltLength || 32;
+  const iterations = options.iterations || 100000;
+  const keyLength = options.keyLength || 64;
+  const encoding = options.encoding || 'hex';
+  const pepper = options.pepper;
+  
   const opts: HashOptions = {
-    algorithm: options.algorithm || 'sha256',
-    saltLength: options.saltLength || 32,
-    iterations: options.iterations || 100000,
-    keyLength: options.keyLength || 64,
-    encoding: options.encoding || 'hex',
-    pepper: options.pepper
+    algorithm,
+    saltLength,
+    iterations,
+    keyLength,
+    encoding,
+    pepper
   };
   
-  const salt = generateSecureSalt(opts.saltLength);
-  const input = opts.pepper ? password + salt + opts.pepper : password + salt;
+  const salt = generateSecureSalt(saltLength);
+  const input = pepper ? password + salt + pepper : password + salt;
   
   let hash: string;
   
-  switch (opts.algorithm) {
+  switch (algorithm) {
     case 'sha256':
     default:
       hash = sha256(input);
       // Apply multiple iterations for enhanced security
-      for (let i = 1; i < opts.iterations; i++) {
+      for (let i = 1; i < iterations; i++) {
         hash = sha256(hash);
       }
       break;
@@ -83,9 +96,9 @@ export function hashPasswordWithOptions(password: string, options: Partial<HashO
   return {
     hash,
     salt,
-    algorithm: opts.algorithm,
-    iterations: opts.iterations,
-    keyLength: opts.keyLength,
+    algorithm,
+    iterations,
+    keyLength,
     metadata: {
       timestamp: Date.now(),
       encoding: opts.encoding,
