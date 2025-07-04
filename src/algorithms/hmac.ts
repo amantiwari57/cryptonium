@@ -36,6 +36,12 @@ export function hmac(message: string, key: string): string {
 }
 
 export function hmacWithOptions(message: string, options: HMACOptions): string {
-  const key = typeof options.key === 'string' ? options.key : Buffer.from(options.key).toString('hex');
+  const key = typeof options.key === 'string' ? options.key : uint8ArrayToHex(options.key);
   return hmac(message, key);
+}
+
+function uint8ArrayToHex(bytes: Uint8Array): string {
+  return Array.from(bytes)
+    .map(byte => byte.toString(16).padStart(2, '0'))
+    .join('');
 } 
