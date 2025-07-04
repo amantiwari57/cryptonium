@@ -1,6 +1,36 @@
 // Timing-safe comparison utilities to prevent timing attacks
 
 /**
+ * Convert string to bytes array using UTF-8 encoding
+ */
+function stringToBytes(str: string): Uint8Array {
+  const bytes: number[] = [];
+  for (let i = 0; i < str.length; i++) {
+    const char = str.charCodeAt(i);
+    if (char < 0x80) {
+      bytes.push(char);
+    } else if (char < 0x800) {
+      bytes.push(0xc0 | (char >> 6));
+      bytes.push(0x80 | (char & 0x3f));
+    } else if (char < 0xd800 || char >= 0xe000) {
+      bytes.push(0xe0 | (char >> 12));
+      bytes.push(0x80 | ((char >> 6) & 0x3f));
+      bytes.push(0x80 | (char & 0x3f));
+    } else {
+      // Surrogate pair
+      i++;
+      const char2 = str.charCodeAt(i);
+      const codePoint = 0x10000 + (((char & 0x3ff) << 10) | (char2 & 0x3ff));
+      bytes.push(0xf0 | (codePoint >> 18));
+      bytes.push(0x80 | ((codePoint >> 12) & 0x3f));
+      bytes.push(0x80 | ((codePoint >> 6) & 0x3f));
+      bytes.push(0x80 | (codePoint & 0x3f));
+    }
+  }
+  return new Uint8Array(bytes);
+}
+
+/**
  * Performs a constant-time string comparison to prevent timing attacks
  * @param a First string to compare
  * @param b Second string to compare
@@ -11,9 +41,9 @@ export function timeSafeCompare(a: string, b: string): boolean {
     return false;
   }
 
-  // Convert strings to byte arrays using Buffer
-  const aBytes = Buffer.from(a, 'utf8');
-  const bBytes = Buffer.from(b, 'utf8');
+  // Convert strings to byte arrays
+  const aBytes = stringToBytes(a);
+  const bBytes = stringToBytes(b);
 
   // Always compare the same number of bytes to prevent timing attacks
   const maxLength = Math.max(aBytes.length, bBytes.length);
@@ -21,8 +51,8 @@ export function timeSafeCompare(a: string, b: string): boolean {
 
   // Compare each byte position, even if lengths differ
   for (let i = 0; i < maxLength; i++) {
-    const aByte = i < aBytes.length ? aBytes[i] : 0;
-    const bByte = i < bBytes.length ? bBytes[i] : 0;
+    const aByte = i < aBytes.length ? (aBytes[i] || 0) : 0;
+    const bByte = i < bBytes.length ? (bBytes[i] || 0) : 0;
     result |= aByte ^ bByte;
   }
 
@@ -78,10 +108,10 @@ export async function addTimingDelay(minTime: number = 10): Promise<void> {
 export async function measureExecutionTime<T>(
   fn: () => T | Promise<T>
 ): Promise<{ result: T; timeMs: number }> {
-  const startTime = process.hrtime.bigint();
+  const startTime = Date.now();
   const result = await fn();
-  const endTime = process.hrtime.bigint();
-  const timeMs = Number(endTime - startTime) / 1000000; // Convert nanoseconds to milliseconds
+  const endTime = Date.now();
+  const timeMs = endTime - startTime;
   
   return { result, timeMs };
 }
