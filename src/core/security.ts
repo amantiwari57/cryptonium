@@ -22,7 +22,11 @@ export const DEFAULT_SECURITY_CONFIG: CryptoConfig = {
  * @returns Security level configuration
  */
 export function getSecurityLevel(level: keyof typeof SECURITY_LEVELS): SecurityLevel {
-  return SECURITY_LEVELS[level];
+  const securityLevel = SECURITY_LEVELS[level];
+  if (!securityLevel) {
+    throw new Error(`Invalid security level: ${level}`);
+  }
+  return securityLevel;
 }
 
 /**
@@ -205,6 +209,6 @@ export function createSecurityProfile(useCase: 'web' | 'mobile' | 'enterprise' |
         algorithm: 'sha256'
       };
     default:
-      return SECURITY_LEVELS.medium;
+      return getSecurityLevel('medium');
   }
 } 
