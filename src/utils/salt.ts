@@ -55,20 +55,23 @@ export function generateCryptoSalt(length: number = 32): string {
 export function generateSecureSalt(length: number = 32, options: Partial<SaltOptions> = {}): string {
   validateKeyLength(length);
   
+  const strategy = options.strategy || 'crypto';
+  const charset = options.charset || SECURE_CHARSET;
+  
   const opts: SaltOptions = {
     length,
-    strategy: options.strategy || 'crypto',
-    charset: options.charset || SECURE_CHARSET
+    strategy,
+    charset
   };
 
-  switch (opts.strategy) {
+  switch (strategy) {
     case 'crypto':
-      return generateCryptoSalt(opts.length);
+      return generateCryptoSalt(length);
     case 'secure':
-      return generateSecureRandomSalt(opts.length, opts.charset);
+      return generateSecureRandomSalt(length, charset);
     case 'random':
     default:
-      return generateSalt(opts.length, opts.charset);
+      return generateSalt(length, charset);
   }
 }
 
@@ -149,60 +152,4 @@ export function generatePatternSalt(pattern: 'number' | 'alpha' | 'mixed' | 'sec
   return generateSalt(length, charset);
 }
 
-/**
- * Validate salt strength
- * @param salt Salt to validate
- * @returns Object with validation results
- */
-export function validateSaltStrength(salt: string): {
-  isStrong: boolean;
-  score: number;
-  feedback: string[];
-} {
-  const feedback: string[] = [];
-  let score = 0;
-  
-  // Length check
-  if (salt.length >= 32) {
-    score += 30;
-  } else if (salt.length >= 16) {
-    score += 20;
-  } else if (salt.length >= 8) {
-    score += 10;
-  } else {
-    feedback.push('Salt should be at least 8 characters long');
-  }
-  
-  // Character diversity
-  const hasLower = /[a-z]/.test(salt);
-  const hasUpper = /[A-Z]/.test(salt);
-  const hasNumbers = /[0-9]/.test(salt);
-  const hasSpecial = /[^a-zA-Z0-9]/.test(salt);
-  
-  const diversity = [hasLower, hasUpper, hasNumbers, hasSpecial].filter(Boolean).length;
-  score += diversity * 10;
-  
-  if (diversity < 3) {
-    feedback.push('Salt should contain multiple character types (lowercase, uppercase, numbers, special)');
-  }
-  
-  // Entropy estimate
-  const uniqueChars = new Set(salt).size;
-  const entropyEstimate = Math.log2(uniqueChars) * salt.length;
-  
-  if (entropyEstimate >= 128) {
-    score += 30;
-  } else if (entropyEstimate >= 64) {
-    score += 20;
-  } else {
-    feedback.push('Salt has low entropy, consider increasing length or character diversity');
-  }
-  
-  const isStrong = score >= 70;
-  
-  if (!isStrong) {
-    feedback.push(`Overall strength score: ${score}/100`);
-  }
-  
-  return { isStrong, score, feedback };
-} 
+ 
