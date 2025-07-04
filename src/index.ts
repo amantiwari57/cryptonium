@@ -1,13 +1,21 @@
 // Main entry point for Cryptonium - A comprehensive cryptographic hashing library
+
+// Core functionality
 export * from './core/password';
 export * from './core/security';
+
+// Hash algorithms
 export * from './algorithms/sha256';
 export * from './algorithms/sha512';
 export * from './algorithms/pbkdf2';
 export * from './algorithms/hmac';
+
+// Utilities
 export * from './utils/salt';
 export * from './utils/timing';
 export * from './utils/validation';
+
+// Types
 export * from './types';
 
 // Re-export main functions for convenience
