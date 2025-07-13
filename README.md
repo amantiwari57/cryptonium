@@ -298,7 +298,7 @@ MIT © [Your Name]
 
 ## Security
 
-If you discover a security vulnerability, please send an email to security@yourproject.com. All security vulnerabilities will be promptly addressed.
+If you discover a security vulnerability, please send an email to amantiwari7057@gmail.com. All security vulnerabilities will be promptly addressed.
 
 ## Changelog
 
