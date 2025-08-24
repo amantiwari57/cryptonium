@@ -1,6 +1,6 @@
 {
   "name": "cryptonium",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A comprehensive cryptographic hashing library with SHA-256, SHA-512, PBKDF2, and advanced security features",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
