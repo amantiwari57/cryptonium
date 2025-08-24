@@ -27,16 +27,16 @@
     "cryptography",
     "authentication"
   ],
-  "author": "Your Name <your.email@example.com>",
+  "author": "Aman Tiwari <amantiwari57@example.com>",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/your-username/cryptonium.git"
+    "url": "https://github.com/amantiwari57/cryptonium.git"
   },
   "bugs": {
-    "url": "https://github.com/your-username/cryptonium/issues"
+    "url": "https://github.com/amantiwari57/cryptonium/issues"
   },
-  "homepage": "https://github.com/your-username/cryptonium#readme",
+  "homepage": "https://github.com/amantiwari57/cryptonium#readme",
   "files": [
     "lib/",
     "README.md",
