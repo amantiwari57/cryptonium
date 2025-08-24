@@ -286,7 +286,7 @@ const options: HashOptions = {
 
 ## License
 
-MIT © [Your Name]
+MIT © Aman Tiwari
 
 ## Contributing
 
@@ -306,4 +306,4 @@ See [CHANGELOG.md](CHANGELOG.md) for details about changes in each version.
 
 ---
 
-**Note**: This library is designed for environments where crypto libraries like bcrypt might not work (e.g., Cloudflare Workers, some serverless environments). For maximum security in traditional Node.js environments, consider using established libraries like bcrypt or argon2. 
+**Note**: This library is designed for environments where crypto libraries like bcrypt might not work (e.g., Cloudflare Workers, Bun and some serverless environment). For maximum security in traditional Node.js environments, consider using established libraries like bcrypt or argon2. 
